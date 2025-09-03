@@ -1,3 +1,11 @@
-console.log("Hello world!");
-// start again lacture from 24:00 minutes
-console.log("hello world");
+// async await usage and promise
+async function myfun(dataI) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      console.log(dataI);
+      resolve("Success");
+    }, 2000);
+  });
+}
+
+myfun("Raham");
