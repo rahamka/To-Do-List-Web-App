@@ -9,6 +9,3 @@ async function myfun(dataI) {
 }
 
 myfun("Raham");
-// please git push of these are required so please git push these all the folders
-// because i were not git push because of network issue?
-// review the Js that you've learned now?
