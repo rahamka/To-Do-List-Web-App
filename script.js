@@ -9,3 +9,4 @@ async function myfun(dataI) {
 }
 
 myfun("Raham");
+// .then((value) => console.log(value));
