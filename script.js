@@ -1,67 +1,214 @@
 let input = document.querySelector("#input");
 let container = document.querySelector("#container");
-let sortNum = 1;
 let task = [];
+let currentSortMode = localStorage.getItem("sortMode") || null;
+let sortBtn = document.querySelector("#sorting-btn");
 
-input.addEventListener("keydown", (event) => {
-  if (event.key === "Enter") {
-    if (input.value === "") return; // Condition if input value is empty
+// Set initial button text
+if (currentSortMode === "asc_alpha") {
+  sortBtn.innerText = "Z - A";
+} else if (currentSortMode === "desc_alpha") {
+  sortBtn.innerText = "A - Z";
+} else {
+  sortBtn.innerText = "A - Z";
+}
 
-    let AppendContainer = document.createElement("div"); // Tasks Appending Container
-
-    let txtGettingDiv = document.createElement("div"); // Text getting div
-    let inputValue = input.value.trim();
-
-    // Sorting Tasks
-    txtGettingDiv.innerText = `${inputValue} : ${sortNum}`;
-    task.push({ text: inputValue, num: sortNum, element: AppendContainer });
-    sortNum++;
-    console.log(task);
-
-    // Styling to Input value
+// Load tasks from localStorage
+const storedTasks = localStorage.getItem("tasks");
+if (storedTasks) {
+  const parsed = JSON.parse(storedTasks);
+  parsed.forEach((text) => {
+    let AppendContainer = document.createElement("div");
+    let txtGettingDiv = document.createElement("div");
+    txtGettingDiv.innerText = text; // Temporary without num
     txtGettingDiv.classList.add("txtGettingDiv");
-
-    // Tasks Delete Button
     let deleteBtn = document.createElement("button");
     deleteBtn.innerText = "Delete Task";
     deleteBtn.classList.add("deleteBtn");
-    AppendContainer.appendChild(txtGettingDiv); // Append to container to display
+    AppendContainer.appendChild(txtGettingDiv);
     AppendContainer.appendChild(deleteBtn);
+    AppendContainer.classList.add("AppendContainer");
+    task.push({ text, element: AppendContainer });
 
-    // Appeding task to main container
-    container.appendChild(AppendContainer);
-    AppendContainer.classList.add("AppendContainer"); // style to AppendContainer
-
-    // logic for delete button
-    deleteBtn.addEventListener("click", () => {
-      txtGettingDiv.remove();
-      deleteBtn.remove();
+    // Add delete listener
+    deleteBtn.addEventListener("click", (evt) => {
+      const taskIndex = task.findIndex((t) => t.element === AppendContainer);
+      if (taskIndex !== -1) {
+        task.splice(taskIndex, 1);
+      }
       AppendContainer.remove();
+      // Re-sort if in sorted mode
+      if (currentSortMode === "asc_alpha") {
+        task.sort((a, b) => a.text.localeCompare(b.text));
+      } else if (currentSortMode === "desc_alpha") {
+        task.sort((a, b) => b.text.localeCompare(a.text));
+      }
+      // Re-append remaining tasks
+      task.forEach((t) => container.appendChild(t.element));
+      assignNums();
+      updateTasksCount();
+      saveTasks();
+    });
+  });
+
+  // Apply saved sort mode
+  if (currentSortMode === "asc_alpha") {
+    task.sort((a, b) => a.text.localeCompare(b.text));
+  } else if (currentSortMode === "desc_alpha") {
+    task.sort((a, b) => b.text.localeCompare(a.text));
+  }
+
+  // Append tasks to container
+  task.forEach((t) => container.appendChild(t.element));
+
+  // Assign sequence numbers
+  assignNums();
+
+  // Update task count
+  updateTasksCount();
+}
+
+// Function to assign sequence numbers in ascending order based on current display
+function assignNums() {
+  task.forEach((t, i) => {
+    t.element.firstChild.innerText = `${t.text} : ${i + 1}`;
+  });
+}
+
+// Function to update task count
+function updateTasksCount() {
+  document.querySelector(".tasks-Div").innerText = `Tasks ${task.length}`;
+}
+
+// Function to save tasks and sort mode
+function saveTasks() {
+  localStorage.setItem("tasks", JSON.stringify(task.map((t) => t.text)));
+  localStorage.setItem("sortMode", currentSortMode);
+}
+
+// Add task on Enter key
+input.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    if (input.value === "") return;
+
+    let inputValue = input.value.trim();
+    if (inputValue.length >= 21) {
+      alert("Please Remove Symbols & Character should be less than 20");
+      return;
+    }
+    for (let items of inputValue) {
+      if (
+        items == "~" ||
+        items == "!" ||
+        items == "@" ||
+        items == "#" ||
+        items == "$" ||
+        items == "%" ||
+        items == "^" ||
+        items == "&" ||
+        items == "*" ||
+        items == "(" ||
+        items == ")" ||
+        items == "-" ||
+        items == "+" ||
+        items == "=" ||
+        items == "[" ||
+        items == "]" ||
+        items == "|" ||
+        items == ":" ||
+        items == ";" ||
+        items == "'" ||
+        items == "," ||
+        items == "/" ||
+        items == ";"
+      ) {
+        alert("Please Remove Symbols & Character should be less than 20");
+        return;
+      }
+    }
+    let AppendContainer = document.createElement("div");
+    let txtGettingDiv = document.createElement("div");
+    txtGettingDiv.innerText = inputValue; // Temporary without num
+    txtGettingDiv.classList.add("txtGettingDiv");
+    let deleteBtn = document.createElement("button");
+    deleteBtn.innerText = "Delete Task";
+    deleteBtn.classList.add("deleteBtn");
+    AppendContainer.appendChild(txtGettingDiv);
+    AppendContainer.appendChild(deleteBtn);
+    AppendContainer.classList.add("AppendContainer");
+
+    task.push({ text: inputValue, element: AppendContainer });
+
+    // Sort if in sorted mode (inserts new task in correct position)
+    if (currentSortMode === "asc_alpha") {
+      task.sort((a, b) => a.text.localeCompare(b.text));
+    } else if (currentSortMode === "desc_alpha") {
+      task.sort((a, b) => b.text.localeCompare(a.text));
+    }
+
+    // Append all tasks (reorders if sorted)
+    task.forEach((t) => container.appendChild(t.element));
+
+    // Assign sequence numbers
+    assignNums();
+
+    // Update task count
+    updateTasksCount();
+
+    // Save to localStorage
+    saveTasks();
+
+    // Add delete listener
+    deleteBtn.addEventListener("click", (evt) => {
+      const taskIndex = task.findIndex((t) => t.element === AppendContainer);
+      if (taskIndex !== -1) {
+        task.splice(taskIndex, 1);
+      }
+      AppendContainer.remove();
+      // Re-sort if in sorted mode
+      if (currentSortMode === "asc_alpha") {
+        task.sort((a, b) => a.text.localeCompare(b.text));
+      } else if (currentSortMode === "desc_alpha") {
+        task.sort((a, b) => b.text.localeCompare(a.text));
+      }
+      // Re-append remaining tasks
+      task.forEach((t) => container.appendChild(t.element));
+      assignNums();
+      updateTasksCount();
+      saveTasks();
     });
 
-    input.value = ""; // Clear input after Enter
-
-    let tasksCount = document.querySelector(".tasks-Div");
-    tasksCount.innerText = `Tasks ${sortNum - 1}`;
+    input.value = ""; // Clear input
   }
 });
 
-// Sorting by Button
-let sortBtn = document.querySelector("#sorting-btn");
+// Sorting button logic (alphabetical sorting)
 sortBtn.addEventListener("click", () => {
-  if (sortBtn.innerText == "A - Z") {
-    if (sortNum == 2) return;
-    task.sort((a, b) => a.num - b.num);
+  if (task.length <= 1) return;
+
+  if (sortBtn.innerText === "A - Z") {
+    task.sort((a, b) => a.text.localeCompare(b.text));
+    currentSortMode = "asc_alpha";
     sortBtn.innerText = "Z - A";
-  } else if (sortBtn.innerText == "Z - A") {
-    if (sortNum == 2) return;
-    task.sort((a, b) => b.num - a.num);
+  } else if (sortBtn.innerText === "Z - A") {
+    task.sort((a, b) => b.text.localeCompare(a.text));
+    currentSortMode = "desc_alpha";
     sortBtn.innerText = "A - Z";
   }
-  // Append sorted tasks back to container
+
+  // Re-append in new order
   task.forEach((t) => container.appendChild(t.element));
+
+  // Assign new sequence numbers
+  assignNums();
+
+  // Save updated state
+  saveTasks();
 });
 
-// add a logic if task is only one then it will not be sort
-// add a logic when some one delete tasks from any one there will be tasks numbers in the sequence like 1, 2, 3?
-// add a logic when there is no task then innerText of sortBtn= Z - A
+// localStorage clear by button
+let clearBtn = document.querySelector("#resetButton");
+clearBtn.addEventListener("click", () => {
+  localStorage.clear();
+  location.reload();
+});
