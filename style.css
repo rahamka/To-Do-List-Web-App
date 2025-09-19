@@ -1,29 +1,349 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/png" href="image.png" />
-    <title>Document</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <div id="container">
-      <div id="position-Div">
-        <h2>Rk <br />To-Do-List Web-App</h2>
-        <div id="input-div">
-          <p class="input-label">Input :</p>
-          <input
-            type="text"
-            name="input-div"
-            id="input"
-            placeholder="Enter Today Task" />
-          <button id="sorting-btn">Z - A</button>
-          <button id="resetButton">Clear List</button>
-        </div>
-        <h3 class="tasks-Div">Tasks 0</h3>
-      </div>
-    </div>
-    <script src="script.js"></script>
-  </body>
-</html>
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background-color: gray;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  min-height: 100vh;
+}
+
+#container {
+  margin: 10px auto;
+  padding: 2em;
+  background-color: #1c1f2b;
+  position: relative;
+  border: none;
+  transition: box-shadow 0.3s;
+  border: 2px solid rgb(255, 145, 0);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  max-height: fit-content;
+  min-height: 300px;
+  min-width: 450px;
+  max-width: fit-content;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
+  background: linear-gradient(135deg, #232526 0%, #414345 100%);
+}
+
+#container h2 {
+  color: rgb(255, 157, 30);
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+#input-div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.2rem;
+  font-weight: 600;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 1rem;
+}
+
+#input-div p {
+  margin: 0 5px 4px 0px;
+  font-size: 1.4rem;
+}
+
+#container input {
+  text-align: center;
+  border-radius: 5px;
+  height: 30px;
+  min-width: 250px;
+  max-width: 300px;
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#input-div ::placeholder {
+  font-size: 1rem;
+  font-style: italic;
+}
+
+#sorting-btn,
+#clear-btn {
+  margin: 2px 0px 0px 10px;
+  border-radius: 7px;
+  border: none;
+  height: 25px;
+  width: 80px;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  background-color: #161a20;
+  border: none;
+  color: #f0f0f0;
+  border-radius: 10px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#sorting-btn::after,
+#clear-btn::after {
+  content: "";
+  position: absolute;
+  height: 107%;
+  width: 102%;
+  border-radius: 10px;
+  background-image: linear-gradient(to bottom right, #ff9b06, #ff4800);
+  z-index: -1;
+}
+
+#sorting-btn:hover,
+#clear-btn:hover {
+  z-index: 0;
+  box-shadow: 40px 0 100px #0044ff, -40px 0 100px #ff0000;
+  display: flex;
+  cursor: pointer;
+}
+
+#position-Div h2 {
+  font-style: italic;
+}
+
+#position-Div .tasks-Div {
+  margin: 5px 0 0 0;
+  padding: 0px;
+  color: rgb(255, 156, 25);
+  font-size: 1.4rem;
+  font-style: italic;
+}
+
+#input:hover {
+  box-shadow: darkblue;
+}
+
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+#container::after,
+#container::before {
+  content: "";
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background-image: conic-gradient(
+    from var(--angle),
+    transparent 70%,
+    rgb(255, 146, 22)
+  );
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  z-index: -1;
+  padding: 5px;
+  border-radius: 10px;
+  animation: 2.2s spin linear infinite;
+}
+
+#container::before {
+  filter: blur(2rem);
+  opacity: 1;
+}
+
+@keyframes spin {
+  from {
+    --angle: 0deg;
+  }
+  to {
+    --angle: 360deg;
+  }
+}
+
+/* Style to the JavaScript Elements */
+
+/* Style to Task Div */
+.txtGettingDiv {
+  background-color: #414a4c;
+  border: 2px solid white;
+  font-weight: 600;
+  border-radius: 10px;
+  width: 300px;
+  height: 30px;
+  line-height: 30px;
+  margin: 1px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Style to Task Delete Button */
+.deleteBtn {
+  height: 30px;
+  width: 120px;
+  border-radius: 10px;
+  background-color: red;
+  opacity: 0.7;
+  color: white;
+  margin: 2px 0 0 7px;
+  border: none;
+  font-weight: 600;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+}
+
+.deleteBtn:hover {
+  opacity: 1;
+}
+
+.AppendContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 8px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* Enhanced Mobile Responsiveness */
+@media (max-width: 600px) {
+  body {
+    align-items: flex-start;
+    padding: 10px;
+  }
+
+  #container {
+    margin: 5px auto;
+    padding: 1em;
+    min-width: 90vw;
+    max-width: 90vw;
+    min-height: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  #container h2 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  #input-div {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    font-size: 1rem;
+  }
+
+  #input-div p {
+    font-size: 1.1rem;
+    text-align: center;
+    margin: 0;
+  }
+
+  #container input {
+    min-width: 100%;
+    max-width: 100%;
+    height: 40px;
+    font-size: 1rem;
+  }
+
+  #sorting-btn,
+  #clear-btn {
+    width: 100%;
+    height: 35px;
+    font-size: 0.9rem;
+    margin: 5px 0;
+  }
+
+  .txtGettingDiv {
+    width: calc(100% - 130px);
+    max-width: 200px;
+    height: 35px;
+    line-height: 35px;
+    font-size: 0.9rem;
+  }
+
+  .deleteBtn {
+    height: 35px;
+    width: 100px;
+    font-size: 0.8rem;
+    margin-left: 5px;
+  }
+
+  .AppendContainer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 5px;
+    width: 100%;
+  }
+
+  .AppendContainer > * {
+    width: 100%;
+  }
+
+  #position-Div .tasks-Div {
+    font-size: 1.1rem;
+  }
+
+  #container {
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+}
+
+/* Additional breakpoint for smaller screens (e.g., Vivo budget models) */
+@media (max-width: 400px) {
+  #container {
+    padding: 0.8em;
+    min-width: 92vw;
+    max-width: 92vw;
+  }
+
+  #container h2 {
+    font-size: 1.1rem;
+  }
+
+  #input-div p {
+    font-size: 1rem;
+  }
+
+  #container input {
+    height: 38px;
+    font-size: 0.95rem;
+  }
+
+  #sorting-btn,
+  #clear-btn {
+    height: 32px;
+    font-size: 0.85rem;
+  }
+
+  .txtGettingDiv {
+    max-width: 180px;
+    height: 32px;
+    line-height: 32px;
+    font-size: 0.85rem;
+  }
+
+  .deleteBtn {
+    height: 32px;
+    width: 90px;
+    font-size: 0.75rem;
+  }
+
+  #position-Div .tasks-Div {
+    font-size: 1rem;
+  }
+}
+
+/* Touch optimization */
+html {
+  touch-action: manipulation;
+}
